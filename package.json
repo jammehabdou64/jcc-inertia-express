@@ -24,6 +24,14 @@
     "svelte",
     "fullstack"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jammehabdou64/jcc-inertia-express.git"
+  },
   "author": "Abdou Jammeh",
-  "license": "MIT"
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jammehabdou64/jcc-inertia-express.git/issues"
+  },
+  "homepage": "https://github.com/jammehabdou64/jcc-inertia-express.git#readme"
 }

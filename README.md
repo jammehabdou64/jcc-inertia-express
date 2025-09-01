@@ -1,42 +1,65 @@
 # 📦 JCC Inertia Express Adapter
 
-An **Inertia.js adapter for Express** that brings the same developer experience you know from Laravel into your Express applications. It allows you to use React (or Vue/Svelte) as your frontend framework while keeping your server-side routing and controllers in Express.
+An **Inertia.js adapter for Express** that brings the same developer experience you know from Laravel into your Express applications.
+It allows you to use **React, Vue, or Svelte** as your frontend framework while keeping server-side routing and controllers in Express.
+
+> This package is a **middleware adapter**, not Inertia itself.
+> To learn everything about Inertia (React, Vue, or Svelte), visit the official site: [https://inertiajs.com](https://inertiajs.com)
 
 ---
 
 ## 🚀 Features
 
-- Middleware for handling Inertia requests.
-- Shared props & versioning system (like Laravel’s Inertia).
+- Middleware for handling Inertia requests in Express.
+- Shared props & versioning system
 - Inertia-aware redirects.
-- Works with Vite + React + Tailwind.
+- Works seamlessly with **Vite + React + Tailwind** (or Vue/Svelte).
 
 ---
 
 ## 📥 Installation
 
 ```bash
-npm install jcc-inertia-express
+npm install jcc-inertia-express dotenv
 ```
 
 or with Yarn:
 
 ```bash
-yarn add jcc-inertia-express
+yarn add jcc-inertia-express dotenv
 ```
+
+> **Note:** `dotenv` is required if you want to use environment variables like `APP_ENV` or `APP_VERSION`.
 
 ---
 
 ## ⚙️ Setup
 
-### 1. Register the template engine
+### 1. Configure dotenv
+
+Create a `.env` file in your project root:
+
+```env
+APP_ENV=local
+APP_VERSION=1.0.0
+```
+
+And load it in your server entry file:
+
+```ts
+import "dotenv/config";
+```
+
+---
+
+### 2. Register the template engine
 
 ```ts
 import express from "express";
 import path from "path";
 import session from "express-session";
 import flash from "express-flash";
-import { engine, inertia } from "inertia-express"; // your package
+import { engine, inertia } from "jcc-inertia-express";
 
 const app = express();
 
@@ -45,10 +68,13 @@ app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "jcc.html");
 ```
 
-### 2. Middlewares
+---
+
+### 3. Middlewares
 
 ```ts
 app.use(express.static("public"));
+
 app.use(
   session({
     secret: "super-secret",
@@ -57,12 +83,15 @@ app.use(
     cookie: { maxAge: 60000 },
   })
 );
+
 app.use(flash());
 
 app.use(
   inertia({
     rootView: "index", // base HTML file
+    version: () => process.env.APP_VERSION || "1",
     props: (req, res) => ({
+      env: process.env.APP_ENV || "production",
       user: req.user || {},
       flash: req.flash?.() || {},
     }),
@@ -74,11 +103,11 @@ app.use(
 
 ## 🛠 Usage
 
-### Controllers (Express Routes)
+### Express Routes / Controllers
 
 ```ts
 app.get("/", (req, res) => {
-  res.inertia("Home", { users: [{ name: "Abdou Jammeh", age: 30 }] });
+  res.inertia("Home", { users: [{ name: "Abdou Jammeh" }] });
 });
 
 app.get("/about", (req, res) => {
@@ -94,7 +123,7 @@ app.get("/welcome", (req, res) => {
 
 ```ts
 app.post("/login", (req, res) => {
-  // logic
+  // your login logic
   res.inertiaRedirect("/dashboard");
 });
 ```
@@ -119,7 +148,7 @@ app.post("/login", (req, res) => {
 
 ---
 
-## ⚡ Vite Configuration
+## ⚡ Vite Configuration Example
 
 ```ts
 import { defineConfig } from "vite";
@@ -145,9 +174,9 @@ export default defineConfig({
 
 ### `res.inertia(component, props?, options?)`
 
-- **component**: `string` – name of the frontend component.
+- **component**: `string` – the frontend component name.
 - **props**: `object` – data passed to the component.
-- **options**: `object` – extra options.
+- **options**: `object` – additional options.
 
 Example:
 
@@ -155,12 +184,14 @@ Example:
 res.inertia("Dashboard", { user: { name: "Abdou" } });
 ```
 
+---
+
 ### `res.inertiaRedirect(url)`
 
-Redirects with Inertia awareness.
+Redirects with Inertia awareness:
 
-- For normal requests → HTTP 303 redirect.
-- For Inertia requests → 409 with `X-Inertia-Location`.
+- Normal requests → HTTP 303 redirect.
+- Inertia requests → 409 status with `X-Inertia-Location`.
 
 ---
 
@@ -204,12 +235,13 @@ project/
 ├── src/
 │   └── server.ts
 ├── vite.config.ts
+├── .env
 └── package.json
 ```
 
 ---
 
-## 🖼 Frontend (React Example)
+## 🖼 Frontend Example (React)
 
 ```jsx
 // views/js/main.jsx
@@ -231,18 +263,18 @@ createInertiaApp({
 });
 ```
 
+> For Vue or Svelte setups, check [Inertia.js documentation](https://inertiajs.com).
+
 ---
 
 ## 🔮 Roadmap
 
-- [ ] Vue & Svelte support
-- [ ] TypeScript typings for props
-- [ ] Better flash message integration
+- [ ] Vue & Svelte adapter support
+- [ ] Strong TypeScript typings for props
+- [ ] Improved flash message integration
 
 ---
 
 ## 📝 License
 
 MIT © Abdou Jammeh
-
----
