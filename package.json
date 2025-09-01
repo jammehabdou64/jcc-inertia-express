@@ -1,6 +1,6 @@
 {
   "name": "jcc-inertia-express",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "An Inertia.js adapter for Express that brings the same developer experience you know from Laravel into your Express applications. It allows you to use React (or Vue/Svelte) as your frontend framework while keeping your server-side routing and controllers in Express.",
   "main": "index.js",
   "types": "index.d.ts",

@@ -29,7 +29,7 @@ or with Yarn:
 yarn add jcc-inertia-express dotenv
 ```
 
-> **Note:** `dotenv` is required if you want to use environment variables like `APP_ENV` or `APP_VERSION`.
+> **Note:** `dotenv` is required to use environment variables like `APP_ENV`,`APP_VERSION` and `APP_URL`.
 
 ---
 
@@ -41,6 +41,7 @@ Create a `.env` file in your project root:
 
 ```env
 APP_ENV=local
+APP_URL=localhost
 APP_VERSION=1.0.0
 ```
 
@@ -313,10 +314,4 @@ createInertiaApp({
 
 ## 📝 License
 
-MIT © Abdou Jammeh
-
----
-
-If you want, I can also **draft a final `package.json` ready for npm publish** with the `"watch"` and `"vite-build"` scripts integrated so your package is fully ready.
-
-Do you want me to do that next?
+## MIT © Abdou Jammeh
