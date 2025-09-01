@@ -11,7 +11,7 @@ It allows you to use **React, Vue, or Svelte** as your frontend framework while 
 ## 🚀 Features
 
 - Middleware for handling Inertia requests in Express.
-- Shared props & versioning system
+- Shared props & versioning system .
 - Inertia-aware redirects.
 - Works seamlessly with **Vite + React + Tailwind** (or Vue/Svelte).
 
@@ -72,7 +72,14 @@ app.set("view engine", "jcc.html");
 
 ### 3. Middlewares
 
+Make sure you have a public/ folder in your project root. This folder will contain:
+
+- Static assets (CSS, JS, images) served directly to the browser.
+
+- The Vite build output, including manifest.json, which Inertia uses to load your compiled JS/CSS files.
+
 ```ts
+// Serve static files from the public folder
 app.use(express.static("public"));
 
 app.use(
@@ -223,6 +230,35 @@ inertia({
 
 ---
 
+## 🔨 Frontend Development
+
+### Scripts in `package.json`
+
+```json
+"scripts": {
+  "watch": "vite",
+  "vite-build": "vite build"
+}
+```
+
+### Usage
+
+- **Run frontend in development mode** (watch files & hot reload):
+
+```bash
+npm run watch
+```
+
+- **Build frontend for production**:
+
+```bash
+npm run vite-build
+```
+
+> Works for React by default; for Vue or Svelte, follow Inertia’s documentation: [https://inertiajs.com](https://inertiajs.com)
+
+---
+
 ## ✅ Example Project Structure
 
 ```
@@ -278,3 +314,9 @@ createInertiaApp({
 ## 📝 License
 
 MIT © Abdou Jammeh
+
+---
+
+If you want, I can also **draft a final `package.json` ready for npm publish** with the `"watch"` and `"vite-build"` scripts integrated so your package is fully ready.
+
+Do you want me to do that next?
