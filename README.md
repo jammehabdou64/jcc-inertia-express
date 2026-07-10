@@ -1,65 +1,49 @@
-# 📦 JCC Inertia Express Adapter
+# JCC Inertia Express
 
-An **Inertia.js adapter for Express** that brings the same developer experience you know from Laravel into your Express applications.
-It allows you to use **React, Vue, or Svelte** as your frontend framework while keeping server-side routing and controllers in Express.
+An **Inertia.js adapter for Express** that brings the same developer experience you know from Laravel into your Express applications. Use **React, Vue, or Svelte** on the frontend while keeping server-side routing in Express.
 
-> This package is a **middleware adapter**, not Inertia itself.
-> To learn everything about Inertia (React, Vue, or Svelte), visit the official site: [https://inertiajs.com](https://inertiajs.com)
+> This package is a **middleware adapter**, not Inertia itself.  
+> For Inertia client setup, see [inertiajs.com](https://inertiajs.com).
 
----
+## Features
 
-## 🚀 Features
+- Inertia request/response middleware for Express
+- Shared props and asset versioning
+- Partial reload support (`X-Inertia-Partial-Data` + `X-Inertia-Partial-Component`)
+- Inertia-aware redirects
+- Optional SSR with automatic client-side fallback
+- JCC template engine with `@inertia`, `@vite`, and `@viteReactRefresh` directives
+- Vite dev server and production manifest support
 
-- Middleware for handling Inertia requests in Express.
-- Shared props & versioning system .
-- Inertia-aware redirects.
-- Works seamlessly with **Vite + React + Tailwind** (or Vue/Svelte).
-
----
-
-## 📥 Installation
+## Installation
 
 ```bash
-npm install jcc-inertia-express dotenv
+npm install jcc-inertia-express express dotenv
 ```
 
-or with Yarn:
+## Setup
 
-```bash
-yarn add jcc-inertia-express dotenv
-```
-
-> **Note:** `dotenv` is required to use environment variables like `APP_ENV`,`APP_VERSION` and `APP_URL`.
-
----
-
-## ⚙️ Setup
-
-### 1. Configure dotenv
-
-Create a `.env` file in your project root:
+### 1. Environment variables
 
 ```env
 APP_ENV=local
 APP_URL=localhost
 APP_VERSION=1.0.0
+SSR_HOST=localhost
+SSR_PORT=13714
 ```
 
-And load it in your server entry file:
+Load them in your server entry:
 
 ```ts
 import "dotenv/config";
 ```
-
----
 
 ### 2. Register the template engine
 
 ```ts
 import express from "express";
 import path from "path";
-import session from "express-session";
-import flash from "express-flash";
 import { engine, inertia } from "jcc-inertia-express";
 
 const app = express();
@@ -67,63 +51,32 @@ const app = express();
 app.engine("jcc.html", engine.render.bind(engine));
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "jcc.html");
+app.use(express.static("public"));
 ```
 
----
-
-### 3. Middlewares
-
-Make sure you have a public/ folder in your project root. This folder will contain:
-
-- Static assets (CSS, JS, images) served directly to the browser.
-
-- The Vite build output, including manifest.json, which Inertia uses to load your compiled JS/CSS files.
+### 3. Inertia middleware
 
 ```ts
-// Serve static files from the public folder
-app.use(express.static("public"));
-
-app.use(
-  session({
-    secret: "super-secret",
-    saveUninitialized: true,
-    resave: true,
-    cookie: { maxAge: 60000 },
-  })
-);
-
-app.use(flash());
-
 app.use(
   inertia({
-    rootView: "index", // base HTML file
+    rootView: "index",
     version: () => process.env.APP_VERSION || "1",
     props: (req, res) => ({
-      env: process.env.APP_ENV || "production",
-      user: req.user || {},
+      user: req.user || null,
       flash: req.flash?.() || {},
     }),
-  })
+    ssr: true, // optional — falls back to client-side if SSR is unavailable
+  }),
 );
 ```
 
----
+## Usage
 
-## 🛠 Usage
-
-### Express Routes / Controllers
+### Render a page
 
 ```ts
 app.get("/", (req, res) => {
   res.inertia("Home", { users: [{ name: "Abdou Jammeh" }] });
-});
-
-app.get("/about", (req, res) => {
-  res.inertia("About");
-});
-
-app.get("/welcome", (req, res) => {
-  res.inertia("Home", { message: "Welcome to Inertia + Express!" });
 });
 ```
 
@@ -131,14 +84,14 @@ app.get("/welcome", (req, res) => {
 
 ```ts
 app.post("/login", (req, res) => {
-  // your login logic
   res.inertiaRedirect("/dashboard");
 });
 ```
 
----
+- Normal requests → HTTP 303 redirect
+- Inertia requests → 303 with `X-Inertia-Location`
 
-## 📄 Root View Example (`views/index.jcc.html`)
+## Root view (`views/index.jcc.html`)
 
 ```html
 <!DOCTYPE html>
@@ -148,170 +101,81 @@ app.post("/login", (req, res) => {
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     @viteReactRefresh @vite(["/views/css/app.css", "/views/js/main.jsx"])
   </head>
-  <body class="bg-slate-200 w-full h-screen">
+  <body>
     @inertia
   </body>
 </html>
 ```
 
----
+## SSR (optional)
 
-## ⚡ Vite Configuration Example
+1. Add an SSR entry (e.g. `views/js/ssr.jsx`) using `@inertiajs/react/server`
+2. Build it with Vite: `vite build --ssr`
+3. Run the SSR sidecar: `node bootstrap/ssr/ssr.js`
+4. Enable SSR in middleware: `ssr: true`
+
+If the sidecar is down or returns an empty response, the adapter **falls back to client-side rendering** automatically.
+
+## Vite config example
 
 ```ts
 import { defineConfig } from "vite";
 import laravel from "laravel-vite-plugin";
 import react from "@vitejs/plugin-react";
-import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
   plugins: [
     laravel({
       input: ["views/css/app.css", "views/js/main.jsx"],
       refresh: true,
+      ssr: "views/js/ssr.jsx",
     }),
-    tailwindcss(),
     react(),
   ],
 });
 ```
 
----
+## API
 
-## 🔑 API Reference
+### `inertia(options)`
 
-### `res.inertia(component, props?, options?)`
+| Option | Type | Description |
+|--------|------|-------------|
+| `rootView` | `string` | Base HTML template name |
+| `props` | `object \| (req, res) => object` | Shared props on every response |
+| `version` | `string \| () => string` | Asset version for cache busting |
+| `ssr` | `boolean` | Enable SSR via sidecar (default: `false`) |
 
-- **component**: `string` – the frontend component name.
-- **props**: `object` – data passed to the component.
-- **options**: `object` – additional options.
+### `res.inertia(component, props?)`
 
-Example:
-
-```ts
-res.inertia("Dashboard", { user: { name: "Abdou" } });
-```
-
----
+Renders an Inertia page. Returns a `Promise<void>`.
 
 ### `res.inertiaRedirect(url)`
 
-Redirects with Inertia awareness:
+Performs an Inertia-aware redirect.
 
-- Normal requests → HTTP 303 redirect.
-- Inertia requests → 409 status with `X-Inertia-Location`.
+## Local development (this repo)
 
----
-
-## 🧩 Advanced
-
-### Shared Props
-
-Define global props available to every Inertia response:
-
-```ts
-inertia({
-  rootView: "index",
-  props: (req, res) => ({
-    csrfToken: req.csrfToken?.(),
-    user: req.user || null,
-  }),
-});
-```
-
-### Versioning
-
-Supports asset versioning to force client-side reloads:
-
-```ts
-inertia({
-  version: () => process.env.APP_VERSION || "1",
-});
-```
-
----
-
-## 🔨 Frontend Development
-
-### Scripts in `package.json`
-
-```json
-"scripts": {
-  "watch": "vite",
-  "vite-build": "vite build"
-}
-```
-
-### Usage
-
-- **Run frontend in development mode** (watch files & hot reload):
+This repository contains the library source in `src/` and a demo app at the root.
 
 ```bash
-npm run watch
+npm install
+npm run build      # compile library to dist/
+npm run demo       # run example Express server
+npm run watch      # run Vite dev server
+npm run vite-build # build frontend + SSR bundle
+npm run ssr        # start SSR sidecar
 ```
 
-- **Build frontend for production**:
+The demo imports from `./src/` directly. Published consumers import from `jcc-inertia-express`.
+
+## Publish
 
 ```bash
-npm run vite-build
+npm run build
+npm publish
 ```
 
-> Works for React by default; for Vue or Svelte, follow Inertia’s documentation: [https://inertiajs.com](https://inertiajs.com)
+## License
 
----
-
-## ✅ Example Project Structure
-
-```
-project/
-├── views/
-│   ├── index.jcc.html
-│   ├── css/app.css
-│   └── js/main.jsx
-├── public/
-├── src/
-│   └── server.ts
-├── vite.config.ts
-├── .env
-└── package.json
-```
-
----
-
-## 🖼 Frontend Example (React)
-
-```jsx
-// views/js/main.jsx
-import { createInertiaApp } from "@inertiajs/react";
-import { createRoot } from "react-dom/client";
-
-createInertiaApp({
-  resolve: (name) => {
-    const pages = import.meta.glob("./Pages/**/*.jsx", { eager: true });
-    return pages[`./Pages/${name}.jsx`];
-  },
-  setup({ el, App, props }) {
-    createRoot(el).render(<App {...props} />);
-  },
-  progress: {
-    color: "#172554",
-    delay: 1,
-  },
-});
-```
-
-> For Vue or Svelte setups, check [Inertia.js documentation](https://inertiajs.com).
-
----
-
-## 🔮 Roadmap
-
-- [ ] Vue & Svelte adapter support
-- [ ] Strong TypeScript typings for props
-- [ ] Improved flash message integration
-
----
-
-## 📝 License
-
-## MIT © Abdou Jammeh
+MIT © Abdou Jammeh
