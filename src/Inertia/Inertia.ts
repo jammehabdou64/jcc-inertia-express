@@ -88,7 +88,7 @@ class InertiaMiddleware {
         ssrBody: result.body,
       };
     } catch (error: any) {
-      console.error(error?.message);
+      // console.error(error?.message);
       return null;
     }
   }

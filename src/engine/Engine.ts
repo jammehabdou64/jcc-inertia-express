@@ -44,10 +44,10 @@ class Engine extends Utils {
     if (param?.ssrHead) {
       beforeMatch += param.ssrHead;
     }
-    const resourcePath = this.removeQuotes(
-      match?.groups?.resource || "",
-    ).split(",");
-    if (process.env.APP_ENV == "local" && resourcePath.length > 1) {
+    const resourcePath = this.removeQuotes(match?.groups?.resource || "").split(
+      ",",
+    );
+    if (resourcePath.length > 1) {
       beforeMatch += this.addCSSLinkTag(
         `${this.viteHost}/${this.getResource(resourcePath, 0)}`,
       );
@@ -108,9 +108,7 @@ class Engine extends Utils {
       const renderedContent = await this.compiler(content);
       callback(null, renderedContent);
     } catch (error) {
-      callback(
-        error instanceof Error ? error : new Error(String(error)),
-      );
+      callback(error instanceof Error ? error : new Error(String(error)));
     }
   }
 }

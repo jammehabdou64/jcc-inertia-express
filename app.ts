@@ -3,7 +3,7 @@ import { Request, Response } from "express";
 import session from "express-session";
 import flash from "express-flash";
 // Demo app imports library source directly; consumers use: import { engine, inertia } from "jcc-inertia-express"
-import { engine, inertia } from "./src/index.js";
+import { engine, inertia } from "./src/index";
 import path from "path";
 
 import "dotenv/config";
@@ -13,7 +13,7 @@ import "dotenv/config";
 
 const app = express();
 
-app.engine("jcc.html", engine.render.bind(engine));
+app.engine("jcc.html", engine.render.bind(engine) as any);
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "jcc.html");
 

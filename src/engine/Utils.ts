@@ -48,19 +48,30 @@ export class Utils {
     afterMatch: string,
     cssPath?: string,
   ): string {
-    if (process.env.APP_ENV != "production") {
+    // if (process.env.APP_ENV != "production") {
+    //   const src = `${this.viteHost}/${resolvePath}`;
+    //   return `${beforeMatch}${this.addScriptTag(src)}${afterMatch}`;
+    // }
+
+    // const manifestContent = this.getPublicFile("build/manifest.json");
+    // if (!manifestContent) {
+    //   console.error("Run npm run vite in your terminal");
+    //   return "";
+    // }
+
+    const manifestContent = this.getPublicFile("build/manifest.json");
+    if (!manifestContent) {
       const src = `${this.viteHost}/${resolvePath}`;
       return `${beforeMatch}${this.addScriptTag(src)}${afterMatch}`;
     }
 
-    const manifestContent = this.getPublicFile("build/manifest.json");
-    if (!manifestContent) {
-      console.error("Run npm run vite in your terminal");
+    let manifest: Record<string, { file: string; css?: string[] }> = {};
+    try {
+      manifest = JSON.parse(manifestContent as string);
+    } catch (error: any) {
       return "";
     }
 
-    const manifest: Record<string, { file: string; css?: string[] }> =
-      JSON.parse(manifestContent);
     const assetData = manifest[resolvePath];
     if (!assetData) {
       throw new Error(`Asset not found: ${resolvePath}`);
