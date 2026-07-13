@@ -14,6 +14,13 @@ const Home = ({ users }) => {
           ))}
         </ul>
         <p> Coding gives me joy</p>
+
+        <p className="mt-20 p-6">
+          Lorem ipsum dolor sit amet consectetur adipisicing elit.
+          Exercitationem dolorum, illo libero minima, corrupti recusandae dicta
+          magnam, delectus nostrum commodi doloribus maxime sed odio
+          perspiciatis accusamus fugit! Odit, necessitatibus iste.
+        </p>
       </div>
     </>
   );
