@@ -15,6 +15,29 @@ An **Inertia.js adapter for Express** that brings the same developer experience 
 - JCC template engine with `@inertia`, `@vite`, and `@viteReactRefresh` directives
 - Vite dev server and production manifest support
 
+## Scaffold a new app
+
+The fastest way to get started is the official starter (scaffolds Express + Inertia + Vite for you):
+
+```bash
+# with Bun
+bunx jcc-inertia-starter my-app
+
+# or with npm
+npx jcc-inertia-starter my-app
+```
+
+Then:
+
+```bash
+cd my-app
+npm install
+npm run watch   # Vite frontend (typical)
+npm run dev     # start the Express app (see the generated README)
+```
+
+If you already have an Express app, install the adapter manually instead.
+
 ## Installation
 
 ```bash
@@ -174,6 +197,16 @@ The demo imports from `./src/` directly. Published consumers import from `jcc-in
 ```bash
 npm run build
 npm publish
+```
+
+The package ships **both** CommonJS and ESM:
+
+```js
+// CommonJS (nodemon / node)
+const { inertia, engine } = require("jcc-inertia-express");
+
+// ESM
+import { inertia, engine } from "jcc-inertia-express";
 ```
 
 ## License

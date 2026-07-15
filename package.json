@@ -1,14 +1,16 @@
 {
   "name": "jcc-inertia-express",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "An Inertia.js adapter for Express that brings the same developer experience you know from Laravel into your Express applications.",
-  "type": "module",
-  "main": "./dist/index.js",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/index.js",
-      "types": "./dist/index.d.ts"
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs",
+      "default": "./dist/index.cjs"
     }
   },
   "files": [
@@ -17,12 +19,14 @@
     "LICENSE"
   ],
   "scripts": {
-    "build": "tsc",
+    "build": "tsup",
     "prepublishOnly": "npm run build",
     "demo": "bun --watch app.ts",
     "watch": "vite",
     "vite-build": "vite build && vite build --ssr",
-    "ssr": "node bootstrap/ssr/ssr.js"
+    "ssr": "node bootstrap/ssr/ssr.js",
+    "beta": "npm version prerelease --preid=beta",
+    "beta-publish": "npm publish --tag beta"
   },
   "keywords": [
     "express",
@@ -34,7 +38,9 @@
     "svelte",
     "ssr",
     "vite",
-    "fullstack"
+    "fullstack",
+    "JCC",
+    "jcc inertia"
   ],
   "repository": {
     "type": "git",
@@ -66,6 +72,7 @@
     "laravel-vite-plugin": "^2.1.0",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
+    "tsup": "^8.5.1",
     "typescript": "^5.9.3",
     "vite": "^7.3.6"
   }

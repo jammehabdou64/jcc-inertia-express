@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from "express";
-import { InertiaOptions, InertiaProps } from "../Interface.js";
+import { InertiaOptions, InertiaProps } from "../Interface";
 
 import "express";
-import { fetchSSR, isValidSsrResult } from "./utils.js";
+import { fetchSSR, isValidSsrResult } from "./utils";
 
 declare global {
   namespace Express {

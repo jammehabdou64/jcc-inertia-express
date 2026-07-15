@@ -1,5 +1,5 @@
 import fs from "fs";
-import { Utils } from "./Utils.js";
+import { Utils } from "./Utils";
 
 class Engine extends Utils {
   private option: Record<string, unknown> = {};
