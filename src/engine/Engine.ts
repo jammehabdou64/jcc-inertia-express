@@ -47,7 +47,7 @@ class Engine extends Utils {
     const resourcePath = this.removeQuotes(match?.groups?.resource || "").split(
       ",",
     );
-    if (resourcePath.length > 1) {
+    if (resourcePath.length > 1 && this.viteHost) {
       beforeMatch += this.addCSSLinkTag(
         `${this.viteHost}/${this.getResource(resourcePath, 0)}`,
       );
@@ -62,7 +62,7 @@ class Engine extends Utils {
   private viteReactRefresh(content: string, match: RegExpMatchArray) {
     const { beforeMatch, afterMatch } = this.content(content, match);
     let viteClientRefresh = "";
-    if (process.env.APP_ENV == "local") {
+    if (this.viteHost) {
       viteClientRefresh = this.injectReactRefresh();
     }
 

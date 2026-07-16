@@ -46,8 +46,8 @@ app.get("/", (req, res) => {
   });
 });
 
-app.get("/welcome", (req, res) => {
-  res.inertia("Home", { users: [{ name: "Abdou Jammeh", age: 30 }] });
+app.get("/contact", (req, res) => {
+  res.inertia("Contact");
 });
 
 app.get("/about", (req, res) => {
